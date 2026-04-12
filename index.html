@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Limiting Dilution Poisson Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="background-shape shape-a"></div>
+  <div class="background-shape shape-b"></div>
+
+  <main class="app-shell">
+    <header class="hero">
+      <p class="eyebrow">Cloning Design Tool</p>
+      <h1>Poisson Calculator for Limiting Dilution</h1>
+      <p class="subtitle">
+        Estimate empty, single-cell, and multi-cell wells from seeding density, then tune for practical single-occupancy targets.
+      </p>
+    </header>
+
+    <section class="panel controls-panel">
+      <h2>Inputs</h2>
+
+      <div class="control">
+        <label for="lambdaSlider">Average cells per well (λ)</label>
+        <div class="value-row">
+          <input id="lambdaSlider" type="range" min="0" max="3" step="0.01" value="0.5" />
+          <input id="lambdaNumber" type="number" min="0" max="3" step="0.01" value="0.5" />
+        </div>
+      </div>
+
+      <div class="control">
+        <label for="targetMinSlider">Target single-occupancy minimum (%)</label>
+        <div class="value-row">
+          <input id="targetMinSlider" type="range" min="5" max="45" step="1" value="30" />
+          <output id="targetMinValue" for="targetMinSlider">30%</output>
+        </div>
+      </div>
+
+      <div class="control">
+        <label for="targetMaxSlider">Target single-occupancy maximum (%)</label>
+        <div class="value-row">
+          <input id="targetMaxSlider" type="range" min="5" max="45" step="1" value="40" />
+          <output id="targetMaxValue" for="targetMaxSlider">40%</output>
+        </div>
+      </div>
+
+      <div class="control">
+        <label for="tableMaxLambdaSlider">Table λ range max</label>
+        <div class="value-row">
+          <input id="tableMaxLambdaSlider" type="range" min="1" max="4" step="0.1" value="3" />
+          <output id="tableMaxLambdaValue" for="tableMaxLambdaSlider">3.0</output>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel results-panel">
+      <h2>Calculated Probabilities</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>P(0 cells)</h3>
+          <p id="p0Value" class="metric">-</p>
+        </article>
+        <article class="card highlight">
+          <h3>P(1 cell)</h3>
+          <p id="p1Value" class="metric">-</p>
+        </article>
+        <article class="card">
+          <h3>P(2+ cells)</h3>
+          <p id="p2PlusValue" class="metric">-</p>
+        </article>
+        <article class="card">
+          <h3>Expected single-cell wells (96-well plate)</h3>
+          <p id="singleWells96Value" class="metric">-</p>
+        </article>
+      </div>
+
+      <div class="advice" id="optimumAdvice"></div>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="table-header">
+        <h2>Occupancy Table</h2>
+        <button id="exportButton" type="button">Export CSV</button>
+      </div>
+      <p class="table-note">
+        Rows in the target single-occupancy band are highlighted.
+      </p>
+      <div class="table-wrap">
+        <table id="resultsTable">
+          <thead>
+            <tr>
+              <th>λ (cells/well)</th>
+              <th>P(0)</th>
+              <th>P(1)</th>
+              <th>P(2+)</th>
+              <th>Expected single wells (96)</th>
+              <th>In target band?</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
