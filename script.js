@@ -142,13 +142,17 @@ function updateAdvice(targetMin, targetMax) {
 function renderTable(targetMin, targetMax, tableMaxLambda) {
   const tbody = elements.resultsTableBody;
   tbody.innerHTML = "";
+  const targetMinPercent = targetMin * 100;
+  const targetMaxPercent = targetMax * 100;
+  const epsilon = 1e-9;
 
   const step = 0.1;
   for (let lambda = 0; lambda <= tableMaxLambda + 1e-9; lambda += step) {
     const roundedLambda = parseFloat(lambda.toFixed(1));
     const { p0, p1, p2Plus } = poissonProbabilities(roundedLambda);
     const singleWells96 = p1 * PLATE_SIZE;
-    const inBand = p1 >= targetMin && p1 <= targetMax;
+    const p1Percent = p1 * 100;
+    const inBand = (p1Percent + epsilon) >= targetMinPercent && (p1Percent - epsilon) <= targetMaxPercent;
 
     const tr = document.createElement("tr");
     if (inBand) {
@@ -175,7 +179,7 @@ function exportTableCsv() {
     "P1",
     "P2plus",
     "expected_single_wells_96",
-    "in_target_band"
+    "p1_within_target_range"
   ]];
 
   const bodyRows = elements.resultsTableBody.querySelectorAll("tr");
