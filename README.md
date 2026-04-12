@@ -18,6 +18,19 @@ Simple browser app for limiting dilution cloning design.
 
 Open `index.html` in any modern browser.
 
+## GitHub Pages
+
+This repo is set up for GitHub Pages deployment via GitHub Actions.
+
+To publish the site:
+
+1. Open the repository settings on GitHub.
+2. Go to Pages.
+3. Set Source to GitHub Actions.
+4. Push to `main` or run the workflow manually.
+
+After the first successful deployment, GitHub will provide the live site URL.
+
 ## Notes
 
 - Based on Poisson model: P(k) = e^(-lambda) * lambda^k / k!
