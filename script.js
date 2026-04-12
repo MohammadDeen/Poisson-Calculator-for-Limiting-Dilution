@@ -135,7 +135,7 @@ function updateAdvice(targetMin, targetMax) {
     `Recommended λ ranges for ${(lower * 100).toFixed(0)}-${(targetMax * 100).toFixed(0)}% P(1): ` +
     `${lowIntervalStart.toFixed(2)} to ${lowIntervalEnd.toFixed(2)} and ` +
     `${highIntervalStart.toFixed(2)} to ${highIntervalEnd.toFixed(2)} cells/well.` +
-    ` Peak single occupancy occurs at λ=${maxAt.toFixed(2)} (${(maxSingle * 100).toFixed(2)}% P(1), ~${maxExpectedSingles} single wells in 96).` +
+    ` Peak single-cell occupancy occurs at λ=${maxAt.toFixed(2)} (${(maxSingle * 100).toFixed(2)}% P(1), ~${maxExpectedSingles} single wells in 96).` +
     upperNote;
 }
 
