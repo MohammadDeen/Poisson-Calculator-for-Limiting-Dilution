@@ -100,13 +100,13 @@ function updateAdvice(targetMin, targetMax) {
 
   if (targetMin > maxSingle) {
     elements.optimumAdvice.textContent =
-      `A minimum target of ${(targetMin * 100).toFixed(0)}% is above the Poisson maximum single occupancy of ${(maxSingle * 100).toFixed(2)}%. Lower the minimum target.`;
+      `A minimum P(1) target of ${(targetMin * 100).toFixed(0)}% is above the Poisson maximum single-cell occupancy of ${(maxSingle * 100).toFixed(2)}%. Lower the minimum target.`;
     return;
   }
 
   if (feasibleUpper < lower) {
     elements.optimumAdvice.textContent =
-      "The chosen target band is not feasible under Poisson assumptions. Increase the max target or lower the min target.";
+      "The chosen P(1) target band is not feasible under Poisson assumptions. Increase the max target or lower the min target.";
     return;
   }
 
@@ -115,7 +115,7 @@ function updateAdvice(targetMin, targetMax) {
 
   if (lowRoots.length === 0 || highRoots.length === 0) {
     elements.optimumAdvice.textContent =
-      "No feasible seeding range found for this target. Try adjusting target bounds.";
+      "No feasible seeding range found for this P(1) target. Try adjusting the target bounds.";
     return;
   }
 
@@ -132,10 +132,10 @@ function updateAdvice(targetMin, targetMax) {
     : "";
 
   elements.optimumAdvice.textContent =
-    `Recommended λ ranges for ${(lower * 100).toFixed(0)}-${(targetMax * 100).toFixed(0)}% single occupancy: ` +
+    `Recommended λ ranges for ${(lower * 100).toFixed(0)}-${(targetMax * 100).toFixed(0)}% P(1): ` +
     `${lowIntervalStart.toFixed(2)} to ${lowIntervalEnd.toFixed(2)} and ` +
     `${highIntervalStart.toFixed(2)} to ${highIntervalEnd.toFixed(2)} cells/well.` +
-    ` Peak single occupancy occurs at λ=${maxAt.toFixed(2)} (${(maxSingle * 100).toFixed(2)}%, ~${maxExpectedSingles} single wells in 96).` +
+    ` Peak single occupancy occurs at λ=${maxAt.toFixed(2)} (${(maxSingle * 100).toFixed(2)}% P(1), ~${maxExpectedSingles} single wells in 96).` +
     upperNote;
 }
 

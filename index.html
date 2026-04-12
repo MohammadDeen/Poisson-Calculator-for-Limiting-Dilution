@@ -24,6 +24,9 @@
 
     <section class="panel controls-panel">
       <h2>Inputs</h2>
+      <p class="table-note">
+        Limiting dilution uses the Poisson distribution to estimate how many wells receive 0, 1, or multiple cells. The target range refers to the probability of exactly one cell per well, P(1), not the raw seeding density λ.
+      </p>
 
       <div class="control">
         <label for="lambdaSlider">Average cells per well (λ)</label>
@@ -34,7 +37,7 @@
       </div>
 
       <div class="control">
-        <label for="targetMinSlider">Target single-occupancy minimum (%)</label>
+        <label for="targetMinSlider">Target probability of exactly one cell per well, P(1) minimum (%)</label>
         <div class="value-row">
           <input id="targetMinSlider" type="range" min="5" max="45" step="1" value="30" />
           <output id="targetMinValue" for="targetMinSlider">30%</output>
@@ -42,7 +45,7 @@
       </div>
 
       <div class="control">
-        <label for="targetMaxSlider">Target single-occupancy maximum (%)</label>
+        <label for="targetMaxSlider">Target probability of exactly one cell per well, P(1) maximum (%)</label>
         <div class="value-row">
           <input id="targetMaxSlider" type="range" min="5" max="45" step="1" value="40" />
           <output id="targetMaxValue" for="targetMaxSlider">40%</output>
@@ -74,7 +77,7 @@
           <p id="p2PlusValue" class="metric">-</p>
         </article>
         <article class="card">
-          <h3>Expected single-cell wells (96-well plate)</h3>
+          <h3>Expected single-cell wells in a 96-well plate</h3>
           <p id="singleWells96Value" class="metric">-</p>
         </article>
       </div>
@@ -84,11 +87,11 @@
 
     <section class="panel table-panel">
       <div class="table-header">
-        <h2>Occupancy Table</h2>
+        <h2>Poisson occupancy table</h2>
         <button id="exportButton" type="button">Export CSV</button>
       </div>
       <p class="table-note">
-        Rows in the target single-occupancy band are highlighted.
+        Poisson probabilities for 0, 1, or 2+ cells per well. Rows with P(1) in the target range are highlighted.
       </p>
       <div class="table-wrap">
         <table id="resultsTable">
@@ -99,7 +102,7 @@
               <th>P(1)</th>
               <th>P(2+)</th>
               <th>Expected single wells (96)</th>
-              <th>In target band?</th>
+              <th>In P(1) target range?</th>
             </tr>
           </thead>
           <tbody></tbody>
