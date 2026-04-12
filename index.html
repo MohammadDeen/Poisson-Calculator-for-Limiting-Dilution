@@ -109,6 +109,53 @@
         </table>
       </div>
     </section>
+
+    <section class="panel advanced-panel">
+      <details>
+        <summary>Advanced: Suspension concentration and dilution planner</summary>
+        <p class="table-note planner-intro">
+          For selected λ and plating volume V, required suspension concentration is C<sub>susp</sub> = 1000 × λ / V<sub>uL</sub> (cells/mL).
+        </p>
+
+        <div class="planner-grid">
+          <div class="control">
+            <label for="stockConcInput">Stock concentration C<sub>stock</sub> (cells/mL)</label>
+            <input id="stockConcInput" type="number" min="0" step="1" value="400000" />
+          </div>
+
+          <div class="control">
+            <label for="platingVolumeInput">Plating volume V (uL/well)</label>
+            <input id="platingVolumeInput" type="number" min="1" step="1" value="100" />
+          </div>
+
+          <div class="control">
+            <label for="finalPrepVolumeInput">Final prep volume (mL)</label>
+            <input id="finalPrepVolumeInput" type="number" min="0.1" step="0.1" value="10" />
+          </div>
+        </div>
+
+        <div class="cards planner-results">
+          <article class="card">
+            <h3>Required C<sub>susp</sub> for selected λ</h3>
+            <p id="requiredCsuspValue" class="metric">-</p>
+          </article>
+          <article class="card">
+            <h3>Dilution factor (C<sub>stock</sub> / C<sub>susp</sub>)</h3>
+            <p id="dilutionFactorValue" class="metric">-</p>
+          </article>
+          <article class="card">
+            <h3>Stock volume to add</h3>
+            <p id="stockVolumeValue" class="metric">-</p>
+          </article>
+          <article class="card">
+            <h3>Medium volume</h3>
+            <p id="mediumVolumeValue" class="metric">-</p>
+          </article>
+        </div>
+
+        <div class="advice" id="dilutionAdvice"></div>
+      </details>
+    </section>
   </main>
 
   <script src="script.js"></script>

@@ -14,6 +14,14 @@ const elements = {
   p2PlusValue: document.getElementById("p2PlusValue"),
   singleWells96Value: document.getElementById("singleWells96Value"),
   optimumAdvice: document.getElementById("optimumAdvice"),
+  stockConcInput: document.getElementById("stockConcInput"),
+  platingVolumeInput: document.getElementById("platingVolumeInput"),
+  finalPrepVolumeInput: document.getElementById("finalPrepVolumeInput"),
+  requiredCsuspValue: document.getElementById("requiredCsuspValue"),
+  dilutionFactorValue: document.getElementById("dilutionFactorValue"),
+  stockVolumeValue: document.getElementById("stockVolumeValue"),
+  mediumVolumeValue: document.getElementById("mediumVolumeValue"),
+  dilutionAdvice: document.getElementById("dilutionAdvice"),
   resultsTableBody: document.querySelector("#resultsTable tbody"),
   exportButton: document.getElementById("exportButton")
 };
@@ -32,6 +40,13 @@ function formatPercent(value, digits = 2) {
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function formatNumber(value, digits = 2) {
+  return Number(value).toLocaleString(undefined, {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: 0
+  });
 }
 
 function solveLambdaForTargetSingle(target) {
@@ -91,6 +106,46 @@ function updateResults() {
 
   updateAdvice(targetMin, targetMax);
   renderTable(targetMin, targetMax, tableMaxLambda);
+  updateDilutionPlanner(lambda);
+}
+
+function updateDilutionPlanner(lambda) {
+  const stockConc = Math.max(parseFloat(elements.stockConcInput.value) || 0, 0);
+  const platingVolumeUl = Math.max(parseFloat(elements.platingVolumeInput.value) || 0, 0);
+  const finalPrepVolumeMl = Math.max(parseFloat(elements.finalPrepVolumeInput.value) || 0, 0);
+
+  if (platingVolumeUl <= 0 || stockConc <= 0 || finalPrepVolumeMl <= 0) {
+    elements.requiredCsuspValue.textContent = "Enter positive inputs";
+    elements.dilutionFactorValue.textContent = "-";
+    elements.stockVolumeValue.textContent = "-";
+    elements.mediumVolumeValue.textContent = "-";
+    elements.dilutionAdvice.textContent = "Enter positive stock concentration, plating volume, and final prep volume to calculate dilution guidance.";
+    return;
+  }
+
+  const requiredCsusp = (1000 * lambda) / platingVolumeUl;
+  const dilutionFactor = requiredCsusp > 0 ? stockConc / requiredCsusp : Infinity;
+  const stockVolumeMl = (requiredCsusp * finalPrepVolumeMl) / stockConc;
+  const stockVolumeUl = stockVolumeMl * 1000;
+  const mediumVolumeMl = Math.max(finalPrepVolumeMl - stockVolumeMl, 0);
+
+  elements.requiredCsuspValue.textContent = `${formatNumber(requiredCsusp, 4)} cells/mL`;
+  elements.dilutionFactorValue.textContent = Number.isFinite(dilutionFactor)
+    ? `${formatNumber(dilutionFactor, 1)}x`
+    : "-";
+  elements.stockVolumeValue.textContent = `${formatNumber(stockVolumeUl, 3)} uL (${formatNumber(stockVolumeMl, 6)} mL)`;
+  elements.mediumVolumeValue.textContent = `${formatNumber(mediumVolumeMl, 4)} mL`;
+
+  if (stockVolumeUl < 2) {
+    elements.dilutionAdvice.textContent =
+      "Calculated stock volume is < 2 uL, which is usually impractical to pipette accurately. Use one or more serial dilutions, then prepare the final mix.";
+  } else if (stockVolumeUl > finalPrepVolumeMl * 1000) {
+    elements.dilutionAdvice.textContent =
+      "Required stock volume exceeds final prep volume. Increase final prep volume or lower target concentration by adjusting lambda or plating volume.";
+  } else {
+    elements.dilutionAdvice.textContent =
+      `Prepare ${formatNumber(finalPrepVolumeMl, 3)} mL by combining ${formatNumber(stockVolumeUl, 3)} uL stock with ${formatNumber(mediumVolumeMl, 4)} mL medium.`;
+  }
 }
 
 function updateAdvice(targetMin, targetMax) {
@@ -243,6 +298,10 @@ function setupEvents() {
 
   elements.tableMaxLambdaSlider.addEventListener("input", updateResults);
   elements.exportButton.addEventListener("click", exportTableCsv);
+
+  [elements.stockConcInput, elements.platingVolumeInput, elements.finalPrepVolumeInput].forEach((input) => {
+    input.addEventListener("input", updateResults);
+  });
 }
 
 setupEvents();

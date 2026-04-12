@@ -13,6 +13,7 @@ Simple browser app for limiting dilution cloning design.
 - Estimates optimal seeding density ranges for target P(1) occupancy (default 30-40%)
 - Interactive sliders and live updates
 - Exportable occupancy table as CSV
+- Optional advanced planner for suspension concentration and dilution setup from stock concentration
 
 ## Run
 
@@ -36,3 +37,4 @@ After the first successful deployment, GitHub will provide the live site URL.
 - Based on Poisson model: P(k) = e^(-lambda) * lambda^k / k!
 - Max single-cell occupancy, P(1), is 1/e (~36.79%) at lambda = 1
 - If a target above 36.79% is entered, the app reports the feasible clipped maximum
+- Suspension concentration for plating volume V (uL/well): C_susp (cells/mL) = 1000 * lambda / V

@@ -117,6 +117,10 @@ h1 {
   animation-delay: 0.24s;
 }
 
+.advanced-panel {
+  animation-delay: 0.3s;
+}
+
 h2 {
   margin-top: 0;
   margin-bottom: 16px;
@@ -202,6 +206,35 @@ output {
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.56);
   line-height: 1.45;
+}
+
+details > summary {
+  cursor: pointer;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+details[open] > summary {
+  margin-bottom: 12px;
+}
+
+.planner-intro {
+  margin-top: 0;
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.planner-grid input[type="number"] {
+  width: 100%;
+}
+
+.planner-results {
+  margin-top: 8px;
 }
 
 .table-header {
@@ -304,6 +337,10 @@ tr.in-band {
 
 @media (max-width: 760px) {
   .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-grid {
     grid-template-columns: 1fr;
   }
 
