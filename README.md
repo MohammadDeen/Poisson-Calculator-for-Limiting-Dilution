@@ -12,7 +12,9 @@ Simple browser app for limiting dilution cloning design.
 - Computes expected single-cell wells in a 96-well plate
 - Estimates optimal seeding density ranges for target P(1) occupancy (default 30-40%)
 - Interactive sliders and live updates
+- Interactive Poisson probability chart with a live λ indicator
 - Exportable occupancy table as CSV
+- Experiment Planner (reverse mode) to solve λ from desired single-cell wells
 - Optional advanced planner for suspension concentration and dilution setup from stock concentration
 
 ## Run
