@@ -5,13 +5,16 @@
   --ink-soft: #4a6273;
   --accent: #0f766e;
   --accent-2: #1d4ed8;
-  --panel: rgba(255, 255, 255, 0.85);
+  --panel: rgba(255, 255, 255, 0.88);
   --border: rgba(18, 34, 47, 0.14);
   --good: #166534;
   --good-bg: rgba(22, 101, 52, 0.12);
-  --curve-p0: #2563eb;
-  --curve-p1: #f59e0b;
-  --curve-p2: #0f766e;
+  --primary-mark: #1d4ed8;
+  --compare-mark: #b45309;
+  --empty: #f1f5f9;
+  --single: #22c55e;
+  --multi: #f97316;
+  --error: #b91c1c;
 }
 
 * {
@@ -57,9 +60,9 @@ body {
 }
 
 .app-shell {
-  max-width: 1120px;
+  max-width: 1140px;
   margin: 0 auto;
-  padding: 24px 16px 36px;
+  padding: 24px 16px 40px;
   display: grid;
   gap: 16px;
 }
@@ -95,28 +98,8 @@ body {
   background: linear-gradient(90deg, rgba(15, 118, 110, 0.35), rgba(37, 99, 235, 0.2));
 }
 
-.controls-panel {
-  animation-delay: 0.08s;
-}
-
-.results-panel {
-  animation-delay: 0.16s;
-}
-
-.chart-panel {
-  animation-delay: 0.22s;
-}
-
-.table-panel {
-  animation-delay: 0.24s;
-}
-
-.planner-panel {
-  animation-delay: 0.28s;
-}
-
-.advanced-panel {
-  animation-delay: 0.3s;
+.section-group {
+  box-shadow: 0 6px 22px rgba(18, 34, 47, 0.05);
 }
 
 .eyebrow {
@@ -133,15 +116,58 @@ h1 {
   font-size: clamp(1.5rem, 2.2vw, 2.25rem);
 }
 
+h2 {
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
 .subtitle {
   margin: 10px 0 0;
   color: var(--ink-soft);
-  max-width: 70ch;
+  max-width: 72ch;
 }
 
-h2 {
-  margin: 0 0 16px;
-  font-size: 1.15rem;
+.howto {
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 8px 12px;
+}
+
+.howto summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.howto p {
+  margin: 10px 0 4px;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .control {
@@ -162,7 +188,14 @@ label {
   margin: 0;
   color: var(--ink-soft);
   font-size: 0.86rem;
-  line-height: 1.3;
+  line-height: 1.35;
+}
+
+.input-error {
+  min-height: 1.05rem;
+  margin: 0;
+  color: var(--error);
+  font-size: 0.84rem;
 }
 
 .value-row {
@@ -208,19 +241,25 @@ output {
   background: rgba(255, 255, 255, 0.56);
 }
 
-.card.highlight {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.24), rgba(255, 255, 255, 0.8));
+.card.stat {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(237, 246, 252, 0.72));
+}
+
+.card.stat.p0 {
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+.card.stat.p1 {
   border-color: rgba(245, 158, 11, 0.35);
 }
 
-.card h3 {
-  margin: 0;
-  font-size: 0.95rem;
+.card.stat.p2 {
+  border-color: rgba(15, 118, 110, 0.3);
 }
 
 .metric {
   margin: 8px 0 0;
-  font-size: clamp(1.07rem, 1.7vw, 1.3rem);
+  font-size: clamp(1.1rem, 1.8vw, 1.45rem);
   font-weight: 600;
   color: var(--ink);
   font-family: "IBM Plex Mono", Consolas, monospace;
@@ -231,66 +270,59 @@ output {
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.66);
   line-height: 1.45;
+}
+
+.compare-panel {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+
+.compare-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.compare-toggle {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.compare-cards {
+  margin-top: 10px;
+}
+
+.compare-card {
+  border-color: rgba(180, 83, 9, 0.3);
 }
 
 .chart-wrap {
   width: 100%;
-  min-height: 320px;
+  min-height: 330px;
   position: relative;
 }
 
 #poissonChart {
   width: 100%;
-  height: 320px;
-}
-
-.planner-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(180px, 1fr));
-  gap: 12px;
-}
-
-.planner-grid-main {
-  grid-template-columns: repeat(2, minmax(220px, 1fr));
-  margin-bottom: 10px;
-}
-
-.planner-actions {
-  margin-top: 14px;
+  height: 330px;
 }
 
 .table-header {
+  margin-top: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
-button {
-  border: 1px solid transparent;
-  background: linear-gradient(135deg, var(--accent), #0d9488);
-  color: #fff;
-  font: inherit;
-  font-weight: 700;
-  border-radius: 10px;
-  padding: 9px 12px;
-  cursor: pointer;
-  transition: transform 0.15s ease, filter 0.2s ease;
-}
-
-button:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.04);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
 .table-note {
-  margin-top: 6px;
+  margin-top: 8px;
   margin-bottom: 10px;
   color: var(--ink-soft);
 }
@@ -302,7 +334,7 @@ button:active {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.94rem;
+  font-size: 0.93rem;
 }
 
 th,
@@ -314,7 +346,7 @@ td {
 }
 
 th {
-  font-size: 0.83rem;
+  font-size: 0.8rem;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -322,6 +354,18 @@ th {
 
 tr.in-band {
   background: var(--good-bg);
+}
+
+tr.mark-primary td:first-child {
+  box-shadow: inset 3px 0 0 var(--primary-mark);
+}
+
+tr.mark-compare td:first-child {
+  box-shadow: inset 6px 0 0 var(--compare-mark);
+}
+
+tr.mark-primary.mark-compare td:first-child {
+  box-shadow: inset 3px 0 0 var(--primary-mark), inset 6px 0 0 var(--compare-mark);
 }
 
 .badge {
@@ -342,18 +386,128 @@ tr.in-band {
   color: #334155;
 }
 
-details > summary {
-  cursor: pointer;
-  font-size: 1.05rem;
+.marker-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 6px;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.primary {
+  background: var(--primary-mark);
+}
+
+.dot.compare {
+  background: var(--compare-mark);
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.planner-grid-main {
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+}
+
+.planner-actions {
+  margin-top: 14px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 3px;
+  margin-right: 6px;
+  border: 1px solid rgba(18, 34, 47, 0.15);
+}
+
+.swatch.empty {
+  background: var(--empty);
+}
+
+.swatch.single {
+  background: var(--single);
+}
+
+.swatch.multi {
+  background: var(--multi);
+}
+
+.plate-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(16px, 1fr));
+  gap: 6px;
+}
+
+.well {
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  border: 1px solid rgba(18, 34, 47, 0.15);
+}
+
+.well.empty {
+  background: var(--empty);
+}
+
+.well.single {
+  background: var(--single);
+}
+
+.well.multi {
+  background: var(--multi);
+}
+
+button {
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, var(--accent), #0d9488);
+  color: #fff;
+  font: inherit;
   font-weight: 700;
+  border-radius: 10px;
+  padding: 9px 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.2s ease;
 }
 
-details[open] > summary {
-  margin-bottom: 12px;
+button.secondary-btn {
+  background: linear-gradient(135deg, #334155, #475569);
 }
 
-.planner-intro {
-  margin-top: 0;
+button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 @keyframes reveal {
@@ -373,16 +527,16 @@ details[open] > summary {
 }
 
 @media (max-width: 760px) {
-  .cards {
-    grid-template-columns: 1fr;
-  }
-
+  .split-grid,
+  .cards,
   .planner-grid,
   .planner-grid-main {
     grid-template-columns: 1fr;
   }
 
-  .table-header {
+  .section-header-row,
+  .table-header,
+  .compare-controls {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -393,13 +547,17 @@ details[open] > summary {
 
   .chart-wrap,
   #poissonChart {
-    min-height: 250px;
-    height: 250px;
+    min-height: 260px;
+    height: 260px;
   }
 
-  output,
   input[type="number"],
   select {
-    justify-self: start;
+    max-width: 100%;
+  }
+
+  .plate-grid {
+    grid-template-columns: repeat(12, minmax(14px, 1fr));
+    gap: 5px;
   }
 }

@@ -15,7 +15,10 @@ Simple browser app for limiting dilution cloning design.
 - Interactive Poisson probability chart with a live λ indicator
 - Exportable occupancy table as CSV
 - Experiment Planner (reverse mode) to solve λ from desired single-cell wells
-- Optional advanced planner for suspension concentration and dilution setup from stock concentration
+- Side-by-side lambda comparison mode (metrics, chart markers, and table markers)
+- 96-well plate simulation preview with re-roll
+- Always-visible dilution planner for suspension concentration and pipetting setup
+- Onboarding guidance and reset-to-defaults workflow
 
 ## Run
 

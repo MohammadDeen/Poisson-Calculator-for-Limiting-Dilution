@@ -17,108 +17,136 @@
     <header class="hero">
       <p class="eyebrow">Cloning Design Tool</p>
       <h1>Poisson Calculator for Limiting Dilution</h1>
-      <p class="subtitle">
-        Find the optimal λ for limiting dilution cloning using Poisson statistics.
-      </p>
+      <p class="subtitle">Find the optimal lambda for limiting dilution cloning using Poisson statistics.</p>
+      <details class="howto">
+        <summary>How to use this tool</summary>
+        <p>
+          Limiting dilution cloning distributes cells across wells so each well may receive 0, 1, or multiple cells. Poisson statistics describe this random dispensing process from the mean lambda value. Many labs target P(1) near 30-40% to balance monoclonal confidence against practical throughput. If lambda is too high, multi-cell contamination increases; if lambda is too low, too many wells are empty and plates are wasted.
+        </p>
+      </details>
     </header>
 
-    <section class="panel controls-panel">
-      <h2>Inputs</h2>
-      <p class="table-note">
-        Limiting dilution uses the Poisson distribution to estimate how many wells receive 0, 1, or multiple cells. The target range refers to the probability of exactly one cell per well, P(1), not the raw seeding density λ.
-      </p>
+    <section class="panel section-group">
+      <div class="section-header-row">
+        <h2>Calculator Inputs and Results</h2>
+        <button id="resetDefaultsButton" type="button" class="secondary-btn">Reset to defaults</button>
+      </div>
 
-      <div class="control">
-        <label for="lambdaSlider">Average cells per well (λ)</label>
-        <p class="field-help">Average number of cells deposited per well.</p>
-        <div class="value-row">
-          <input id="lambdaSlider" type="range" min="0" max="3" step="0.01" value="0.7" />
-          <input id="lambdaNumber" type="number" min="0" max="3" step="0.01" value="0.7" />
+      <div class="split-grid">
+        <div>
+          <div class="control">
+            <label for="lambdaSlider">Average cells per well (lambda)</label>
+            <p class="field-help">Average number of cells deposited per well.</p>
+            <div class="value-row">
+              <input id="lambdaSlider" type="range" min="0.01" max="3" step="0.01" value="0.7" />
+              <input id="lambdaNumber" type="number" min="0.01" max="3" step="0.01" value="0.7" />
+            </div>
+            <p id="lambdaError" class="input-error"></p>
+          </div>
+
+          <div class="control">
+            <label for="targetMinSlider">Target probability of exactly one cell per well, P(1) minimum (%)</label>
+            <p class="field-help">What fraction of wells should contain exactly one cell?</p>
+            <div class="value-row">
+              <input id="targetMinSlider" type="range" min="5" max="45" step="1" value="30" />
+              <output id="targetMinValue" for="targetMinSlider">30%</output>
+            </div>
+          </div>
+
+          <div class="control">
+            <label for="targetMaxSlider">Target probability of exactly one cell per well, P(1) maximum (%)</label>
+            <p class="field-help">What fraction of wells should contain exactly one cell?</p>
+            <div class="value-row">
+              <input id="targetMaxSlider" type="range" min="5" max="45" step="1" value="40" />
+              <output id="targetMaxValue" for="targetMaxSlider">40%</output>
+            </div>
+            <p id="targetError" class="input-error"></p>
+          </div>
+
+          <div class="control">
+            <label for="tableMaxLambdaSlider">Table/chart lambda range max</label>
+            <p class="field-help">Upper lambda shown in the chart and occupancy table.</p>
+            <div class="value-row">
+              <input id="tableMaxLambdaSlider" type="range" min="1" max="3" step="0.1" value="3" />
+              <output id="tableMaxLambdaValue" for="tableMaxLambdaSlider">3.0</output>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="cards">
+            <article class="card stat p0">
+              <h3>P(0 cells)</h3>
+              <p class="field-help">Fraction of wells expected to be empty.</p>
+              <p id="p0Value" class="metric">-</p>
+            </article>
+            <article class="card stat p1">
+              <h3>P(1 cell)</h3>
+              <p class="field-help">Fraction of wells expected to contain exactly one cell.</p>
+              <p id="p1Value" class="metric">-</p>
+            </article>
+            <article class="card stat p2">
+              <h3>P(2+ cells)</h3>
+              <p class="field-help">Fraction of wells with more than one cell (contamination risk).</p>
+              <p id="p2PlusValue" class="metric">-</p>
+            </article>
+            <article class="card stat">
+              <h3>Expected single-cell wells in a 96-well plate</h3>
+              <p class="field-help">Expected count of monoclonal wells per 96 wells.</p>
+              <p id="singleWells96Value" class="metric">-</p>
+            </article>
+          </div>
+          <div class="advice" id="optimumAdvice"></div>
         </div>
       </div>
 
-      <div class="control">
-        <label for="targetMinSlider">Target probability of exactly one cell per well, P(1) minimum (%)</label>
-        <p class="field-help">What fraction of wells should contain exactly one cell?</p>
-        <div class="value-row">
-          <input id="targetMinSlider" type="range" min="5" max="45" step="1" value="30" />
-          <output id="targetMinValue" for="targetMinSlider">30%</output>
+      <div class="compare-panel">
+        <h3>Side-by-side lambda comparison</h3>
+        <div class="compare-controls">
+          <label class="compare-toggle">
+            <input id="enableCompare" type="checkbox" /> Enable comparison lambda
+          </label>
+          <input id="compareLambdaInput" type="number" min="0.01" max="3" step="0.01" value="1.00" />
+          <p id="compareError" class="input-error"></p>
         </div>
-      </div>
-
-      <div class="control">
-        <label for="targetMaxSlider">Target probability of exactly one cell per well, P(1) maximum (%)</label>
-        <p class="field-help">What fraction of wells should contain exactly one cell?</p>
-        <div class="value-row">
-          <input id="targetMaxSlider" type="range" min="5" max="45" step="1" value="40" />
-          <output id="targetMaxValue" for="targetMaxSlider">40%</output>
-        </div>
-      </div>
-
-      <div class="control">
-        <label for="tableMaxLambdaSlider">Table λ range max</label>
-        <p class="field-help">Upper λ shown in the chart and occupancy table.</p>
-        <div class="value-row">
-          <input id="tableMaxLambdaSlider" type="range" min="1" max="3" step="0.1" value="3" />
-          <output id="tableMaxLambdaValue" for="tableMaxLambdaSlider">3.0</output>
+        <div class="cards compare-cards">
+          <article class="card">
+            <h4>Primary lambda</h4>
+            <p id="primarySummary" class="metric">-</p>
+            <p id="primaryDilutionSummary" class="field-help">-</p>
+          </article>
+          <article class="card compare-card" id="compareCard">
+            <h4>Comparison lambda</h4>
+            <p id="compareSummary" class="metric">Enable comparison</p>
+            <p id="compareDilutionSummary" class="field-help">-</p>
+          </article>
         </div>
       </div>
     </section>
 
-    <section class="panel results-panel">
-      <h2>Calculated Probabilities</h2>
-      <div class="cards">
-        <article class="card">
-          <h3>P(0 cells)</h3>
-          <p class="field-help">Fraction of wells expected to be empty.</p>
-          <p id="p0Value" class="metric">-</p>
-        </article>
-        <article class="card highlight">
-          <h3>P(1 cell)</h3>
-          <p class="field-help">Fraction of wells expected to contain exactly one cell.</p>
-          <p id="p1Value" class="metric">-</p>
-        </article>
-        <article class="card">
-          <h3>P(2+ cells)</h3>
-          <p class="field-help">Fraction of wells with more than one cell (contamination risk).</p>
-          <p id="p2PlusValue" class="metric">-</p>
-        </article>
-        <article class="card">
-          <h3>Expected single-cell wells in a 96-well plate</h3>
-          <p class="field-help">Expected count of monoclonal wells per 96 wells.</p>
-          <p id="singleWells96Value" class="metric">-</p>
-        </article>
-      </div>
-
-      <div class="advice" id="optimumAdvice"></div>
-    </section>
-
-    <section class="panel chart-panel">
-      <h2>Poisson probability chart</h2>
-      <p class="table-note">Visualize the tradeoff between empty wells, single-cell wells, and multi-cell wells. The vertical dashed line marks your current λ.</p>
+    <section class="panel section-group">
+      <h2>Poisson Probability Chart and Occupancy Table</h2>
+      <p class="table-note">The chart shows P(0), P(1), and P(2+) across lambda. Dashed markers show selected primary and comparison lambda values.</p>
       <div class="chart-wrap">
         <canvas id="poissonChart" aria-label="Poisson probabilities across lambda" role="img"></canvas>
       </div>
-    </section>
 
-    <section class="panel table-panel">
       <div class="table-header">
-        <h2>Poisson occupancy table</h2>
+        <h3>Poisson occupancy table</h3>
         <button id="exportButton" type="button">Export CSV</button>
       </div>
-      <p class="table-note">
-        Poisson probabilities for 0, 1, or 2+ cells per well. Rows with P(1) in the target range are highlighted.
-      </p>
+      <p class="table-note">Rows in the target P(1) range are highlighted in green. Selected lambda rows are marked in blue and amber.</p>
       <div class="table-wrap">
         <table id="resultsTable">
           <thead>
             <tr>
-              <th>λ (cells/well)</th>
+              <th>lambda</th>
               <th>P(0)</th>
               <th>P(1)</th>
               <th>P(2+)</th>
               <th>Expected single wells (96)</th>
-              <th>P(1) within target range?</th>
+              <th>P(1) in target?</th>
+              <th>Markers</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -126,16 +154,16 @@
       </div>
     </section>
 
-    <section class="panel planner-panel">
+    <section class="panel planner-panel section-group">
       <h2>Experiment Planner</h2>
-      <p class="table-note">Reverse planning mode: choose wells and desired monoclonal wells, then solve for λ in the low-contamination range (0 &lt; λ &lt; 1).</p>
+      <p class="table-note">Reverse planning mode: solve for lambda from desired single-cell wells while staying in the low-contamination regime (0 less than lambda less than 1).</p>
       <div class="planner-grid planner-grid-main">
         <div class="control">
           <label for="totalWellsSelect">Total wells available</label>
-          <p class="field-help">Choose 96, 192, 384, or enter a custom plate size.</p>
+          <p class="field-help">Choose 96, 192, 384, or enter a custom total.</p>
           <select id="totalWellsSelect">
             <option value="96">96</option>
-            <option value="192">192</option>
+            <option value="192" selected>192</option>
             <option value="384">384</option>
             <option value="custom">Custom</option>
           </select>
@@ -143,85 +171,94 @@
         </div>
         <div class="control">
           <label for="desiredClonesInput">Desired number of single-cell wells</label>
-          <p class="field-help">Target count of wells that contain exactly one cell.</p>
+          <p class="field-help">Target number of monoclonal wells.</p>
           <input id="desiredClonesInput" type="number" min="0" step="1" value="30" />
+          <p id="plannerError" class="input-error"></p>
         </div>
       </div>
 
       <div class="cards">
         <article class="card">
-          <h3>Required λ (0 &lt; λ &lt; 1)</h3>
-          <p class="field-help">Seeding setting that hits your single-cell target in the low-contamination regime.</p>
+          <h3>Required lambda (0 less than lambda less than 1)</h3>
           <p id="plannerLambdaValue" class="metric">-</p>
         </article>
         <article class="card">
           <h3>Expected empty wells</h3>
-          <p class="field-help">Wells with no cells at the recommended λ.</p>
           <p id="plannerEmptyValue" class="metric">-</p>
         </article>
         <article class="card">
           <h3>Expected multi-cell wells</h3>
-          <p class="field-help">Wells likely containing more than one cell.</p>
           <p id="plannerMultiValue" class="metric">-</p>
         </article>
         <article class="card">
           <h3>Recommended seeding density</h3>
-          <p class="field-help">Suspension concentration implied by this λ and current uL/well in the dilution planner.</p>
           <p id="plannerCsuspValue" class="metric">-</p>
         </article>
       </div>
 
       <div class="planner-actions">
-        <button id="usePlannerLambdaButton" type="button">Use this λ in the calculator above</button>
+        <button id="usePlannerLambdaButton" type="button">Use this lambda in the calculator above</button>
       </div>
       <div class="advice" id="plannerAdvice"></div>
     </section>
 
-    <section class="panel advanced-panel">
-      <details>
-        <summary>Advanced: Suspension concentration and dilution planner</summary>
-        <p class="table-note planner-intro">
-          For selected λ and plating volume V, required suspension concentration is C<sub>susp</sub> = 1000 × λ / V<sub>uL</sub> (cells/mL).
-        </p>
+    <section class="panel section-group">
+      <div class="section-header-row">
+        <h2>96-Well Plate Simulation Preview</h2>
+        <button id="rerollPlateButton" type="button">Re-roll</button>
+      </div>
+      <p class="table-note">Illustration only: one random Poisson draw at the current lambda. Not a prediction of your exact plate.</p>
+      <div class="legend">
+        <span><i class="swatch empty"></i> Empty</span>
+        <span><i class="swatch single"></i> Single cell</span>
+        <span><i class="swatch multi"></i> 2+ cells</span>
+      </div>
+      <div id="plateGrid" class="plate-grid" aria-label="Simulated 96-well plate"></div>
+      <p id="plateSummary" class="field-help"></p>
+    </section>
 
-        <div class="planner-grid">
-          <div class="control">
-            <label for="stockConcInput">Stock concentration C<sub>stock</sub> (cells/mL)</label>
-            <input id="stockConcInput" type="number" min="0" step="1" value="400000" />
-          </div>
+    <section class="panel advanced-panel section-group">
+      <h2>Dilution Planner</h2>
+      <p class="table-note">Convert selected lambda to suspension concentration and practical pipetting volumes.</p>
 
-          <div class="control">
-            <label for="platingVolumeInput">Plating volume V (uL/well)</label>
-            <input id="platingVolumeInput" type="number" min="1" step="1" value="100" />
-          </div>
-
-          <div class="control">
-            <label for="finalPrepVolumeInput">Final prep volume (mL)</label>
-            <input id="finalPrepVolumeInput" type="number" min="0.1" step="0.1" value="10" />
-          </div>
+      <div class="planner-grid">
+        <div class="control">
+          <label for="stockConcInput">Stock concentration Cstock (cells/mL)</label>
+          <input id="stockConcInput" type="number" min="0" step="1" value="400000" />
         </div>
 
-        <div class="cards planner-results">
-          <article class="card">
-            <h3>Required C<sub>susp</sub> for selected λ</h3>
-            <p id="requiredCsuspValue" class="metric">-</p>
-          </article>
-          <article class="card">
-            <h3>Dilution factor (C<sub>stock</sub> / C<sub>susp</sub>)</h3>
-            <p id="dilutionFactorValue" class="metric">-</p>
-          </article>
-          <article class="card">
-            <h3>Stock volume to add</h3>
-            <p id="stockVolumeValue" class="metric">-</p>
-          </article>
-          <article class="card">
-            <h3>Medium volume</h3>
-            <p id="mediumVolumeValue" class="metric">-</p>
-          </article>
+        <div class="control">
+          <label for="platingVolumeInput">Plating volume V (uL/well)</label>
+          <input id="platingVolumeInput" type="number" min="1" step="1" value="100" />
         </div>
 
-        <div class="advice" id="dilutionAdvice"></div>
-      </details>
+        <div class="control">
+          <label for="finalPrepVolumeInput">Final prep volume (mL)</label>
+          <input id="finalPrepVolumeInput" type="number" min="0.1" step="0.1" value="10" />
+        </div>
+      </div>
+      <p id="dilutionInputError" class="input-error"></p>
+
+      <div class="cards planner-results">
+        <article class="card">
+          <h3>Required Csusp for selected lambda</h3>
+          <p id="requiredCsuspValue" class="metric">-</p>
+        </article>
+        <article class="card">
+          <h3>Dilution factor (Cstock / Csusp)</h3>
+          <p id="dilutionFactorValue" class="metric">-</p>
+        </article>
+        <article class="card">
+          <h3>Stock volume to add</h3>
+          <p id="stockVolumeValue" class="metric">-</p>
+        </article>
+        <article class="card">
+          <h3>Medium volume</h3>
+          <p id="mediumVolumeValue" class="metric">-</p>
+        </article>
+      </div>
+
+      <div class="advice" id="dilutionAdvice"></div>
     </section>
   </main>
 
