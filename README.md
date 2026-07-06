@@ -6,8 +6,7 @@ A free, static, client-side web app for designing limiting-dilution cloning expe
 
 **Live site:** https://mohammaddeen.github.io/Poisson-Calculator-for-Limiting-Dilution/
 
-<!-- TODO: add a screenshot. Save one as docs/screenshot.png (or similar) and update the path below. -->
-![Screenshot of the calculator](TODO-screenshot-path)
+![Poisson Calculator for Limiting Dilution — main interface](docs/screenshot.png)
 
 ## Features
 
@@ -23,6 +22,20 @@ A free, static, client-side web app for designing limiting-dilution cloning expe
 - Shareable links: the key inputs are encoded in the URL; a "Copy shareable link" button reproduces the exact state
 - Print stylesheet for taping the dilution plan by the hood
 - [Methods & Maths](methods.html) and [About](about.html) pages
+
+## Screenshots
+
+**Poisson probability chart and occupancy table**
+
+![Poisson probability chart across lambda, with the occupancy table below](docs/chart.png)
+
+**Experiment Planner (reverse mode)**
+
+![Experiment Planner solving lambda from a desired number of single-cell wells](docs/planner.png)
+
+**96-well plate simulation preview**
+
+![Simulated 96-well plate showing empty, single-cell, and multi-cell wells](docs/plate.png)
 
 ## Run locally
 
