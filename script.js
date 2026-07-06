@@ -77,7 +77,8 @@ const elements = {
   plateSummary: document.getElementById("plateSummary"),
   rerollPlateButton: document.getElementById("rerollPlateButton"),
 
-  resetDefaultsButton: document.getElementById("resetDefaultsButton")
+  resetDefaultsButton: document.getElementById("resetDefaultsButton"),
+  copyLinkButton: document.getElementById("copyLinkButton")
 };
 
 let poissonChart;
@@ -351,7 +352,7 @@ function calculateDilutionForLambda(lambda, state) {
 function updateDilutionPlanner(state) {
   const dilution = calculateDilutionForLambda(state.lambda, state);
 
-  elements.requiredCsuspValue.textContent = `${formatNumber(dilution.requiredCsusp, 4)} cells/mL`;
+  elements.requiredCsuspValue.textContent = `${formatNumber(dilution.requiredCsusp, 4)} cells/mL (at ${formatNumber(state.platingVolumeUl, 0)} µL/well)`;
   elements.dilutionFactorValue.textContent = `${formatNumber(dilution.dilutionFactor, 1)}x`;
   elements.stockVolumeValue.textContent = `${formatNumber(dilution.stockVolumeUl, 3)} uL (${formatNumber(dilution.stockVolumeMl, 6)} mL)`;
   elements.mediumVolumeValue.textContent = `${formatNumber(dilution.mediumVolumeMl, 4)} mL`;
@@ -419,7 +420,7 @@ function updateExperimentPlanner(state) {
   elements.plannerLambdaValue.textContent = solvedLambda.toFixed(3);
   elements.plannerEmptyValue.textContent = formatNumber(expectedEmpty, 1);
   elements.plannerMultiValue.textContent = formatNumber(expectedMulti, 1);
-  elements.plannerCsuspValue.textContent = `${formatNumber(csusp, 4)} cells/mL`;
+  elements.plannerCsuspValue.textContent = `${formatNumber(csusp, 4)} cells/mL (at ${formatNumber(state.platingVolumeUl, 0)} µL/well)`;
 
   elements.plannerAdvice.textContent =
     `For ${formatNumber(totalWells, 0)} wells and ${formatNumber(desiredSingles, 0)} desired single-cell wells: lambda≈${solvedLambda.toFixed(3)}.`;
@@ -638,6 +639,129 @@ function setMainLambda(lambda) {
   elements.lambdaNumber.value = clamped.toFixed(2);
 }
 
+// --- Shareable link state (URL query params) ---------------------------------
+// Encoded keys: lambda, wells, singles, vol, stock.
+
+function buildShareableUrl() {
+  const state = getState();
+  const params = new URLSearchParams();
+  const add = (key, value) => {
+    if (Number.isFinite(value)) {
+      params.set(key, String(value));
+    }
+  };
+
+  add("lambda", Number(state.lambda.toFixed(2)));
+  add("wells", getPlannerTotalWells());
+  add("singles", state.desiredSingles);
+  add("vol", state.platingVolumeUl);
+  add("stock", state.stockConc);
+
+  const base = `${window.location.origin}${window.location.pathname}`;
+  return `${base}?${params.toString()}`;
+}
+
+function applyUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  if (Array.from(params.keys()).length === 0) {
+    return;
+  }
+
+  const readNum = (key, apply) => {
+    if (!params.has(key)) {
+      return;
+    }
+    const value = parseFloat(params.get(key));
+    if (Number.isFinite(value)) {
+      apply(value);
+    }
+  };
+
+  readNum("lambda", (value) => setMainLambda(value));
+  readNum("vol", (value) => {
+    if (value > 0) {
+      elements.platingVolumeInput.value = String(value);
+    }
+  });
+  readNum("stock", (value) => {
+    if (value > 0) {
+      elements.stockConcInput.value = String(value);
+    }
+  });
+  readNum("singles", (value) => {
+    if (value >= 0) {
+      elements.desiredClonesInput.value = String(value);
+    }
+  });
+  readNum("wells", (value) => {
+    if (value <= 0) {
+      return;
+    }
+    const asString = String(value);
+    const known = ["96", "192", "384"];
+    if (known.includes(asString)) {
+      elements.totalWellsSelect.value = asString;
+      elements.customWellsInput.hidden = true;
+    } else {
+      elements.totalWellsSelect.value = "custom";
+      elements.customWellsInput.value = asString;
+      elements.customWellsInput.hidden = false;
+    }
+  });
+
+  updateAll({ rerollPlate: true });
+}
+
+function fallbackCopy(text, onDone) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "absolute";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand("copy");
+    onDone(true);
+  } catch (err) {
+    window.prompt("Copy this link:", text);
+    onDone(false);
+  }
+  document.body.removeChild(textarea);
+}
+
+function copyShareableLink() {
+  const url = buildShareableUrl();
+  const button = elements.copyLinkButton;
+
+  const confirm = () => {
+    if (!button) {
+      return;
+    }
+    const original = button.dataset.label || button.textContent;
+    button.dataset.label = original;
+    button.textContent = "Copied!";
+    button.classList.add("copied");
+    window.setTimeout(() => {
+      button.textContent = button.dataset.label;
+      button.classList.remove("copied");
+    }, 1600);
+  };
+
+  // Reflect current state in the address bar so a manual copy also works.
+  try {
+    window.history.replaceState(null, "", url);
+  } catch (err) {
+    /* history API unavailable (e.g. file:// in some browsers); ignore */
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(confirm).catch(() => fallbackCopy(url, confirm));
+  } else {
+    fallbackCopy(url, confirm);
+  }
+}
+
 function updateAll({ rerollPlate = false } = {}) {
   clearErrors();
 
@@ -721,7 +845,11 @@ function setupEvents() {
   elements.rerollPlateButton.addEventListener("click", () => updateAll({ rerollPlate: true }));
   elements.resetDefaultsButton.addEventListener("click", resetDefaults);
   elements.exportButton.addEventListener("click", exportTableCsv);
+  if (elements.copyLinkButton) {
+    elements.copyLinkButton.addEventListener("click", copyShareableLink);
+  }
 }
 
 setupEvents();
 resetDefaults();
+applyUrlParams();

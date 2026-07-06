@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Methods &amp; Maths | Limiting Dilution Poisson Calculator</title>
+  <meta name="description" content="Equations and derivations behind the limiting-dilution Poisson calculator: the Poisson PMF, P(0)/P(1)/P(2+), the reverse solve for lambda, and the seeding-density conversion, plus assumptions and limitations." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- MathJax via CDN. Tradeoff: rendering needs a one-time network fetch of
+       the MathJax bundle. Everything else on the page is readable without JS;
+       only the typeset equations depend on it. No build step required. -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]]
+      },
+      options: { skipHtmlTags: ["script", "noscript", "style", "textarea", "pre"] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+  <div class="background-shape shape-a"></div>
+  <div class="background-shape shape-b"></div>
+
+  <main class="app-shell">
+    <header class="hero">
+      <a class="back-link" href="index.html">&larr; Back to calculator</a>
+      <p class="eyebrow">Documentation</p>
+      <h1>Methods &amp; Maths</h1>
+      <p class="subtitle">The equations behind the limiting-dilution Poisson calculator, with derivations, the reverse solve, the seeding-density conversion, and the assumptions they rest on.</p>
+    </header>
+
+    <section class="panel section-group doc-prose">
+      <h2>1. The Poisson model of cell dispensing</h2>
+      <p>
+        In limiting-dilution cloning, a cell suspension is dispensed into wells so that each
+        well receives a small, random number of cells. If cells are randomly and independently
+        distributed in a well-mixed suspension, the count of cells landing in any one well
+        follows a <strong>Poisson distribution</strong> with mean \(\lambda\) (the average number
+        of cells deposited per well).
+      </p>
+      <p>The probability that a given well receives exactly \(k\) cells is the Poisson PMF:</p>
+      <p>$$ P(k) = \frac{\lambda^{k}\, e^{-\lambda}}{k!}, \qquad k = 0, 1, 2, \dots $$</p>
+      <p>
+        Here \(\lambda &gt; 0\) is the only parameter. Everything the calculator reports is
+        derived from this single equation.
+      </p>
+
+      <h2>2. Empty, single, and multi-cell wells</h2>
+
+      <h3>P(0): empty wells</h3>
+      <p>Setting \(k = 0\) and using \(0! = 1\) and \(\lambda^{0} = 1\):</p>
+      <p>$$ P(0) = \frac{\lambda^{0} e^{-\lambda}}{0!} = e^{-\lambda}. $$</p>
+
+      <h3>P(1): single-cell (monoclonal) wells</h3>
+      <p>Setting \(k = 1\) with \(1! = 1\):</p>
+      <p>$$ P(1) = \frac{\lambda^{1} e^{-\lambda}}{1!} = \lambda\, e^{-\lambda}. $$</p>
+      <p>
+        These are the wells of interest for cloning: exactly one cell, so any resulting colony
+        is presumptively monoclonal.
+      </p>
+
+      <h3>P(2+): multi-cell wells (contamination risk)</h3>
+      <p>
+        Because the probabilities over all \(k\) must sum to 1, the probability of two or more
+        cells is the complement of the empty and single cases:
+      </p>
+      <p>$$ P(2^{+}) = 1 - P(0) - P(1) = 1 - e^{-\lambda} - \lambda e^{-\lambda} = 1 - e^{-\lambda}\,(1 + \lambda). $$</p>
+
+      <h3>Expected single-cell wells on a plate</h3>
+      <p>
+        For a plate (or batch) of \(N\) wells, the expected number of monoclonal wells is simply
+        \(N\) times the single-cell probability:
+      </p>
+      <p>$$ \mathbb{E}[\text{single-cell wells}] = N \cdot P(1) = N\,\lambda\, e^{-\lambda}. $$</p>
+      <p>The calculator reports this for \(N = 96\) by default.</p>
+
+      <h2>3. Why P(1) peaks at 36.79%</h2>
+      <p>
+        \(P(1) = \lambda e^{-\lambda}\) is maximised where its derivative with respect to
+        \(\lambda\) is zero:
+      </p>
+      <p>$$ \frac{d}{d\lambda}\big(\lambda e^{-\lambda}\big) = e^{-\lambda} - \lambda e^{-\lambda} = e^{-\lambda}(1 - \lambda) = 0 \;\Rightarrow\; \lambda = 1. $$</p>
+      <p>
+        At \(\lambda = 1\), \(P(1) = 1 \cdot e^{-1} = 1/e \approx 0.3679\). So <strong>no choice of
+        \(\lambda\) can put more than about 36.79% of wells into the single-cell state.</strong>
+        If you ask for a target above this, the tool reports the feasible clipped maximum.
+      </p>
+
+      <h2>4. Reverse solve: lambda from a desired number of single-cell wells</h2>
+      <p>
+        The Experiment Planner works backwards. Given \(N\) total wells and a desired number of
+        single-cell wells \(s\), the target single-cell probability is
+      </p>
+      <p>$$ p = \frac{s}{N}, \qquad \text{and we solve} \qquad \lambda\, e^{-\lambda} = p \;\; \text{for } \lambda. $$</p>
+      <p>
+        This equation has no elementary closed form; it inverts through the
+        <strong>Lambert&nbsp;W</strong> function, \(\lambda = -W(-p)\), which is two-valued for
+        \(0 &lt; p &lt; 1/e\). There are therefore <em>two</em> roots: a low one with
+        \(\lambda &lt; 1\) and a high one with \(\lambda &gt; 1\).
+      </p>
+      <p>
+        Because the goal is monoclonality, the planner keeps the <strong>low root</strong>
+        \((0 &lt; \lambda &lt; 1)\), which minimises the multi-cell contamination \(P(2^{+})\)
+        for the same \(P(1)\). It is found numerically by bisection on
+        \(f(\lambda) = \lambda e^{-\lambda} - p\) over the interval \((0, 1)\). If
+        \(p &gt; 1/e\) the target is infeasible and the tool says so.
+      </p>
+
+      <h2>5. Seeding-density conversion</h2>
+      <p>
+        \(\lambda\) is an average <em>count per well</em>. To prepare a suspension you need a
+        <em>concentration</em>. If each well is plated with volume \(V\), the required suspension
+        concentration \(c\) satisfies
+      </p>
+      <p>$$ \lambda = c \cdot V \qquad\Longleftrightarrow\qquad c = \frac{\lambda}{V}. $$</p>
+      <p>
+        Working in laboratory units &mdash; concentration in cells/mL and plating volume in
+        microlitres per well &mdash; and using \(1\ \text{mL} = 1000\ \mu\text{L}\):
+      </p>
+      <p>$$ C_{\text{susp}}\ \left(\tfrac{\text{cells}}{\text{mL}}\right) = \frac{1000\,\lambda}{V\ (\mu\text{L/well})}. $$</p>
+      <div class="callout">
+        <strong>The plating volume \(V\) drives this number.</strong> The calculator defaults to
+        \(V = 100\ \mu\text{L/well}\). If your protocol plates a different volume (for example
+        \(200\ \mu\text{L}\)), the required concentration changes by exactly that factor &mdash;
+        halving it here would leave you seeding twice as many cells per well. Always set \(V\) to
+        match your actual plating volume.
+      </div>
+
+      <h3>From concentration to pipetting</h3>
+      <p>
+        Given a stock concentration \(C_{\text{stock}}\) and a final prep volume \(V_{\text{final}}\),
+        the dilution factor and the volume of stock to add follow from conservation of cells,
+        \(C_{\text{stock}} \cdot V_{\text{stock}} = C_{\text{susp}} \cdot V_{\text{final}}\):
+      </p>
+      <p>$$ \text{dilution factor} = \frac{C_{\text{stock}}}{C_{\text{susp}}}, \qquad V_{\text{stock}} = \frac{C_{\text{susp}}\, V_{\text{final}}}{C_{\text{stock}}}, \qquad V_{\text{medium}} = V_{\text{final}} - V_{\text{stock}}. $$</p>
+
+      <h2>6. Assumptions and limitations</h2>
+      <ul>
+        <li>
+          <strong>Random, independent placement.</strong> The Poisson model assumes each cell
+          lands in a well independently of the others, with a uniform average rate. This holds
+          only for a well-mixed, single-cell suspension.
+        </li>
+        <li>
+          <strong>Clumping and poor mixing break it.</strong> If cells aggregate, settle, or the
+          suspension is not homogeneous, real counts become over-dispersed: you get more empty
+          wells and more multi-cell wells than Poisson predicts, so apparent monoclonality is
+          overstated. Filtering to a single-cell suspension and gentle, thorough mixing matter.
+        </li>
+        <li>
+          <strong>No biology after plating.</strong> The calculator models only how cells are
+          <em>distributed</em>. It says nothing about post-plating clonal survival, plating
+          efficiency, or growth rate. A well seeded with one cell may yield no colony; \(P(1)\)
+          is an upper bound on usable monoclonal wells, not a guarantee.
+        </li>
+        <li>
+          <strong>Idealised counting.</strong> Hemocytometer / counter error in estimating
+          \(C_{\text{stock}}\), pipetting error, and edge/evaporation effects are not modelled.
+          Treat the outputs as a starting point and confirm empirically.
+        </li>
+        <li>
+          <strong>Single-hit interpretation.</strong> This tool is for cloning design. It is not a
+          limiting-dilution <em>assay</em> (LDA) frequency estimator; it does not fit responding-cell
+          frequencies from fraction-of-negative-wells data.
+        </li>
+      </ul>
+
+      <div class="callout todo">
+        TODO (optional): add citations to the Poisson / limiting-dilution literature you want to
+        reference here.
+      </div>
+
+      <p style="margin-top: 22px;"><a class="back-link" href="index.html">&larr; Back to calculator</a></p>
+    </section>
+  </main>
+</body>
+</html>

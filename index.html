@@ -3,7 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Limiting Dilution Poisson Calculator</title>
+
+  <title>Limiting Dilution Poisson Calculator | Cloning Design Tool</title>
+  <meta name="description" content="Free browser-based Poisson calculator for limiting-dilution cloning. Find the optimal lambda, target P(1) single-cell occupancy, plan reverse experiments, and convert to seeding density and pipetting volumes." />
+  <meta name="author" content="Mohammad Deen Hayatu" />
+  <link rel="canonical" href="https://mohammaddeen.github.io/Poisson-Calculator-for-Limiting-Dilution/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Limiting Dilution Poisson Calculator" />
+  <meta property="og:title" content="Limiting Dilution Poisson Calculator" />
+  <meta property="og:description" content="Find the optimal lambda for limiting-dilution cloning using Poisson statistics: P(0)/P(1)/P(2+), reverse experiment planning, and dilution/seeding-density planning." />
+  <meta property="og:url" content="https://mohammaddeen.github.io/Poisson-Calculator-for-Limiting-Dilution/" />
+  <!-- TODO: set OG image URL once a screenshot/logo is hosted (recommended 1200x630 PNG). -->
+  <meta property="og:image" content="TODO-og-image-url" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Limiting Dilution Poisson Calculator" />
+  <meta name="twitter:description" content="Find the optimal lambda for limiting-dilution cloning using Poisson statistics: P(0)/P(1)/P(2+), reverse experiment planning, and dilution/seeding-density planning." />
+  <!-- TODO: set Twitter image URL (can reuse the OG image). -->
+  <meta name="twitter:image" content="TODO-og-image-url" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
@@ -18,6 +39,11 @@
       <p class="eyebrow">Cloning Design Tool</p>
       <h1>Poisson Calculator for Limiting Dilution</h1>
       <p class="subtitle">Find the optimal lambda for limiting dilution cloning using Poisson statistics.</p>
+      <nav class="page-nav" aria-label="Site pages">
+        <a href="methods.html">Methods &amp; Maths</a>
+        <a href="about.html">About</a>
+        <a href="https://github.com/MohammadDeen/Poisson-Calculator-for-Limiting-Dilution">GitHub repo</a>
+      </nav>
       <details class="howto">
         <summary>How to use this tool</summary>
         <p>
@@ -29,7 +55,10 @@
     <section class="panel section-group">
       <div class="section-header-row">
         <h2>Calculator Inputs and Results</h2>
-        <button id="resetDefaultsButton" type="button" class="secondary-btn">Reset to defaults</button>
+        <div class="header-actions">
+          <button id="copyLinkButton" type="button" class="secondary-btn">Copy shareable link</button>
+          <button id="resetDefaultsButton" type="button" class="secondary-btn">Reset to defaults</button>
+        </div>
       </div>
 
       <div class="split-grid">
@@ -228,7 +257,8 @@
         </div>
 
         <div class="control">
-          <label for="platingVolumeInput">Plating volume V (uL/well)</label>
+          <label for="platingVolumeInput">Plating volume V (µL/well)</label>
+          <p class="field-help">Drives every seeding-density number below and in the Experiment Planner. Default is 100 µL/well &mdash; change it to match your protocol (e.g. 200 µL) or your densities will be off by that factor.</p>
           <input id="platingVolumeInput" type="number" min="1" step="1" value="100" />
         </div>
 
@@ -260,6 +290,15 @@
 
       <div class="advice" id="dilutionAdvice"></div>
     </section>
+
+    <footer class="site-footer">
+      <nav aria-label="Site pages">
+        <a href="methods.html">Methods &amp; Maths</a>
+        <a href="about.html">About</a>
+        <a href="https://github.com/MohammadDeen/Poisson-Calculator-for-Limiting-Dilution">GitHub repo</a>
+      </nav>
+      <p class="field-help">Poisson calculator for limiting-dilution cloning. Static, client-side, and free to use.</p>
+    </footer>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>

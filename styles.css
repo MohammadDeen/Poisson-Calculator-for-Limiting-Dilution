@@ -156,12 +156,70 @@ h4 {
   line-height: 1.45;
 }
 
+.page-nav {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  align-items: center;
+}
+
+.page-nav a {
+  color: var(--accent-2);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.page-nav a:hover {
+  border-bottom-color: var(--accent-2);
+}
+
 .section-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+button.copied {
+  filter: brightness(1.08);
+}
+
+.site-footer {
+  padding: 6px 4px 4px;
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  justify-content: center;
+}
+
+.site-footer a {
+  color: var(--accent-2);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.site-footer a:hover {
+  border-bottom-color: var(--accent-2);
+}
+
+.site-footer .field-help {
+  text-align: center;
 }
 
 .split-grid {
@@ -410,6 +468,74 @@ tr.mark-primary.mark-compare td:first-child {
   background: var(--compare-mark);
 }
 
+.doc-prose {
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.doc-prose h2 {
+  margin-top: 26px;
+  font-size: 1.25rem;
+}
+
+.doc-prose h2:first-of-type {
+  margin-top: 6px;
+}
+
+.doc-prose h3 {
+  margin: 20px 0 6px;
+  font-size: 1.02rem;
+}
+
+.doc-prose p,
+.doc-prose li {
+  color: var(--ink);
+  max-width: 74ch;
+}
+
+.doc-prose ul {
+  padding-left: 20px;
+}
+
+.doc-prose li {
+  margin-bottom: 6px;
+}
+
+.doc-prose code {
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  background: rgba(18, 34, 47, 0.06);
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
+
+.doc-prose .callout {
+  margin: 18px 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.doc-prose .todo {
+  border-left-color: var(--compare-mark);
+  background: rgba(180, 83, 9, 0.08);
+  font-weight: 500;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: var(--accent-2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
 .planner-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
@@ -523,6 +649,104 @@ button:disabled {
   }
   to {
     transform: translateY(18px) translateX(10px) scale(1.03);
+  }
+}
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    overflow: visible;
+  }
+
+  /* Hide interactive chrome that has no meaning on paper. */
+  .background-shape,
+  .page-nav,
+  .howto,
+  .site-footer,
+  button,
+  input[type="range"],
+  .chart-wrap,
+  #poissonChart,
+  .legend,
+  .plate-grid,
+  #plateSummary,
+  .table-note,
+  .field-help,
+  .input-error {
+    display: none !important;
+  }
+
+  .app-shell {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 8px;
+  }
+
+  .hero,
+  .panel {
+    opacity: 1 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 12px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .panel::before {
+    display: none;
+  }
+
+  .cards {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .card,
+  .advice {
+    background: #fff !important;
+    border: 1px solid #ddd;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .metric {
+    font-size: 1rem;
+  }
+
+  /* Show entered values, but flatten the input widgets. */
+  input[type="number"],
+  select {
+    border: none;
+    padding: 0;
+    max-width: none;
+    background: #fff;
+    font-weight: 700;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  table {
+    font-size: 0.75rem;
+  }
+
+  th,
+  td {
+    padding: 4px 6px;
+  }
+
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
 
