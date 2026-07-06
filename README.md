@@ -73,7 +73,7 @@ If you use this tool in published work, please cite it via its Zenodo DOI:
 
 > Hayatu, M. D. *Limiting Dilution Poisson Calculator*. Zenodo. https://doi.org/10.5281/zenodo.21218201
 
-DOI: [10.5281/zenodo.21218201](https://doi.org/10.5281/zenodo.21218201) (this is the concept DOI and always resolves to the latest version).
+DOI: [10.5281/zenodo.21218201](https://doi.org/10.5281/zenodo.21218201) 
 
 ## License
 
