@@ -112,7 +112,7 @@
 
           <div class="control">
             <label for="targetMaxSlider">Target probability of exactly one cell per well, P(1) maximum (%)</label>
-            <p class="field-help">What fraction of wells should contain exactly one cell?</p>
+            <p class="field-help">What fraction of wells should contain exactly one cell? Note: under Poisson, P(1) cannot exceed 36.8% (its maximum at &lambda;=1). Higher targets are treated as this feasible ceiling.</p>
             <div class="value-row">
               <input id="targetMaxSlider" type="range" min="5" max="45" step="1" value="40" />
               <output id="targetMaxValue" for="targetMaxSlider">40%</output>
@@ -151,6 +151,11 @@
               <h3>Expected single-cell wells in a 96-well plate</h3>
               <p class="field-help">Expected count of monoclonal wells per 96 wells.</p>
               <p id="singleWells96Value" class="metric">-</p>
+            </article>
+            <article class="card stat">
+              <h3>Single-cell among occupied wells</h3>
+              <p class="field-help">Of wells that received at least one cell, the fraction that are truly monoclonal: P(1) / (1 &minus; P(0)). This is the clonality confidence for wells that actually grow.</p>
+              <p id="singleAmongOccupiedValue" class="metric">-</p>
             </article>
           </div>
           <div class="advice" id="optimumAdvice"></div>
@@ -201,6 +206,7 @@
               <th>P(0)</th>
               <th>P(1)</th>
               <th>P(2+)</th>
+              <th>Single / occupied</th>
               <th>Expected single wells (96)</th>
               <th>P(1) in target?</th>
               <th>Markers</th>

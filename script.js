@@ -41,6 +41,7 @@ const elements = {
   p1Value: document.getElementById("p1Value"),
   p2PlusValue: document.getElementById("p2PlusValue"),
   singleWells96Value: document.getElementById("singleWells96Value"),
+  singleAmongOccupiedValue: document.getElementById("singleAmongOccupiedValue"),
   optimumAdvice: document.getElementById("optimumAdvice"),
 
   primarySummary: document.getElementById("primarySummary"),
@@ -89,6 +90,13 @@ function poissonProbabilities(lambda) {
   const p1 = lambda * p0;
   const p2Plus = Math.max(0, 1 - p0 - p1);
   return { p0, p1, p2Plus };
+}
+
+// Fraction of occupied (non-empty) wells that hold exactly one cell:
+// P(1 | k >= 1) = P(1) / (1 - P(0)). Undefined when no wells are occupied.
+function singleAmongOccupied(probs) {
+  const occupied = 1 - probs.p0;
+  return occupied > 0 ? probs.p1 / occupied : NaN;
 }
 
 function poissonRandom(lambda) {
@@ -259,6 +267,7 @@ function updateTopMetrics(state) {
   elements.p1Value.textContent = `${formatPercent(probs.p1)} (${singleWells96.toFixed(1)} / ${PLATE_SIZE})`;
   elements.p2PlusValue.textContent = formatPercent(probs.p2Plus);
   elements.singleWells96Value.textContent = singleWells96.toFixed(1);
+  elements.singleAmongOccupiedValue.textContent = formatPercent(singleAmongOccupied(probs));
 
   elements.targetMinValue.textContent = `${state.targetMinPercent.toFixed(0)}%`;
   elements.targetMaxValue.textContent = `${state.targetMaxPercent.toFixed(0)}%`;
@@ -281,9 +290,12 @@ function updateTopMetrics(state) {
 
   const lowRoots = solveLambdaForTargetSingle(lower);
   const highRoots = solveLambdaForTargetSingle(feasibleUpper);
-  elements.optimumAdvice.textContent =
-    `Recommended lambda ranges for ${state.targetMinPercent.toFixed(0)}-${state.targetMaxPercent.toFixed(0)}% P(1): ` +
-    `${lowRoots[0].toFixed(2)} to ${highRoots[0].toFixed(2)} and ${highRoots[1].toFixed(2)} to ${lowRoots[1].toFixed(2)}.`;
+  elements.optimumAdvice.innerHTML =
+    `To hit ${state.targetMinPercent.toFixed(0)}-${state.targetMaxPercent.toFixed(0)}% P(1), two lambda branches give the same single-cell rate: ` +
+    `<strong>low-lambda branch ${lowRoots[0].toFixed(2)} to ${highRoots[0].toFixed(2)}</strong> ` +
+    `(recommended for monoclonality &mdash; fewest 2+ cell wells), or ` +
+    `high-lambda branch ${highRoots[1].toFixed(2)} to ${lowRoots[1].toFixed(2)} ` +
+    `(same P(1) but far more multi-cell contamination; generally not recommended for cloning).`;
 }
 
 function buildMarkerCell(isPrimary, isCompare) {
@@ -326,11 +338,14 @@ function renderTable(state) {
       tr.classList.add("mark-compare");
     }
 
+    const occupiedSingle = singleAmongOccupied(probs);
+
     tr.innerHTML = `
       <td>${l.toFixed(1)}</td>
       <td>${formatPercent(probs.p0)}</td>
       <td>${formatPercent(probs.p1)}</td>
       <td>${formatPercent(probs.p2Plus)}</td>
+      <td>${Number.isNaN(occupiedSingle) ? "-" : formatPercent(occupiedSingle)}</td>
       <td>${singleWells96.toFixed(1)}</td>
       <td><span class="badge ${inBand ? "good" : "no"}">${inBand ? "Yes" : "No"}</span></td>
       <td>${buildMarkerCell(isPrimary, isCompare)}</td>
@@ -460,7 +475,7 @@ function renderPlateSimulation(state) {
 }
 
 function exportTableCsv() {
-  const rows = [["lambda", "P0", "P1", "P2plus", "expected_single_wells_96", "p1_in_target", "markers"]];
+  const rows = [["lambda", "P0", "P1", "P2plus", "single_among_occupied", "expected_single_wells_96", "p1_in_target", "markers"]];
   const bodyRows = elements.resultsTableBody.querySelectorAll("tr");
   bodyRows.forEach((row) => {
     const cells = row.querySelectorAll("td");

@@ -94,6 +94,23 @@
       <p>$$ \mathbb{E}[\text{single-cell wells}] = N \cdot P(1) = N\,\lambda\, e^{-\lambda}. $$</p>
       <p>The calculator reports this for \(N = 96\) by default.</p>
 
+      <h3>Single-cell fraction among occupied wells</h3>
+      <p>
+        At the bench you usually judge clonality from wells that actually <em>grow</em> &mdash; i.e.
+        wells that received at least one cell. The relevant quantity is then a <strong>conditional
+        probability</strong>: given a well is occupied (\(k \ge 1\)), what is the chance it holds
+        exactly one cell? Dividing \(P(1)\) by the probability of being occupied, \(1 - P(0)\):
+      </p>
+      <p>$$ P(1 \mid k \ge 1) = \frac{P(1)}{1 - P(0)} = \frac{\lambda e^{-\lambda}}{1 - e^{-\lambda}}. $$</p>
+      <p>
+        This is a clonality-confidence measure. Crucially it <em>decreases</em> as \(\lambda\) rises:
+        for example it is about 85.7% at \(\lambda = 0.3\), 77.1% at \(\lambda = 0.5\), 69.1% at
+        \(\lambda = 0.7\), and 58.2% at \(\lambda = 1\). So while \(\lambda = 1\) maximises the
+        <em>absolute number</em> of single-cell wells, a lower \(\lambda\) gives higher
+        <em>confidence</em> that any given growing well is monoclonal. The calculator shows this as
+        the &ldquo;single-cell among occupied wells&rdquo; metric and as a column in the occupancy table.
+      </p>
+
       <h2>3. Why P(1) peaks at 36.79%</h2>
       <p>
         \(P(1) = \lambda e^{-\lambda}\) is maximised where its derivative with respect to
