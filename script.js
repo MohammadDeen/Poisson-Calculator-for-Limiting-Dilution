@@ -13,6 +13,7 @@ const DEFAULTS = {
   totalWells: "192",
   customWells: 192,
   desiredSingles: 30,
+  survivalPercent: 100,
   stockConc: 400000,
   platingVolumeUl: 100,
   finalPrepVolumeMl: 10
@@ -67,10 +68,12 @@ const elements = {
   totalWellsSelect: document.getElementById("totalWellsSelect"),
   customWellsInput: document.getElementById("customWellsInput"),
   desiredClonesInput: document.getElementById("desiredClonesInput"),
+  survivalInput: document.getElementById("survivalInput"),
   plannerLambdaValue: document.getElementById("plannerLambdaValue"),
   plannerEmptyValue: document.getElementById("plannerEmptyValue"),
   plannerMultiValue: document.getElementById("plannerMultiValue"),
   plannerCsuspValue: document.getElementById("plannerCsuspValue"),
+  plannerUsableValue: document.getElementById("plannerUsableValue"),
   plannerAdvice: document.getElementById("plannerAdvice"),
   usePlannerLambdaButton: document.getElementById("usePlannerLambdaButton"),
 
@@ -200,6 +203,7 @@ function getState() {
   const platingVolumeUl = parseFloat(elements.platingVolumeInput.value);
   const finalPrepVolumeMl = parseFloat(elements.finalPrepVolumeInput.value);
   const desiredSingles = parseFloat(elements.desiredClonesInput.value);
+  const survivalPercent = parseFloat(elements.survivalInput.value);
   const totalWells = elements.totalWellsSelect.value === "custom"
     ? parseFloat(elements.customWellsInput.value)
     : parseFloat(elements.totalWellsSelect.value);
@@ -215,6 +219,7 @@ function getState() {
     platingVolumeUl,
     finalPrepVolumeMl,
     desiredSingles,
+    survivalPercent,
     totalWells
   };
 }
@@ -239,6 +244,11 @@ function validateState(state) {
 
   if (!(state.totalWells > 0) || !(state.desiredSingles >= 0)) {
     elements.plannerError.textContent = "Total wells must be positive and desired single-cell wells cannot be negative.";
+    valid = false;
+  }
+
+  if (!(state.survivalPercent >= 0 && state.survivalPercent <= 100)) {
+    elements.plannerError.textContent = "Plating efficiency / survival must be between 0 and 100%.";
     valid = false;
   }
 
@@ -418,6 +428,7 @@ function updateExperimentPlanner(state) {
     elements.plannerEmptyValue.textContent = "-";
     elements.plannerMultiValue.textContent = "-";
     elements.plannerCsuspValue.textContent = "-";
+    elements.plannerUsableValue.textContent = "-";
     return;
   }
 
@@ -430,15 +441,22 @@ function updateExperimentPlanner(state) {
   const probs = poissonProbabilities(solvedLambda);
   const expectedEmpty = totalWells * probs.p0;
   const expectedMulti = totalWells * probs.p2Plus;
+  const expectedSingle = totalWells * probs.p1;
+  const survival = state.survivalPercent / 100;
+  const expectedUsable = expectedSingle * survival;
   const csusp = (1000 * solvedLambda) / state.platingVolumeUl;
 
   elements.plannerLambdaValue.textContent = solvedLambda.toFixed(3);
   elements.plannerEmptyValue.textContent = formatNumber(expectedEmpty, 1);
   elements.plannerMultiValue.textContent = formatNumber(expectedMulti, 1);
   elements.plannerCsuspValue.textContent = `${formatNumber(csusp, 4)} cells/mL (at ${formatNumber(state.platingVolumeUl, 0)} µL/well)`;
+  elements.plannerUsableValue.textContent = `${formatNumber(expectedUsable, 1)} (S = ${formatNumber(state.survivalPercent, 0)}%)`;
 
+  const survivalNote = survival < 1
+    ? ` At ${formatNumber(state.survivalPercent, 0)}% survival, expect about ${formatNumber(expectedUsable, 1)} usable colonies.`
+    : "";
   elements.plannerAdvice.textContent =
-    `For ${formatNumber(totalWells, 0)} wells and ${formatNumber(desiredSingles, 0)} desired single-cell wells: lambda≈${solvedLambda.toFixed(3)}.`;
+    `For ${formatNumber(totalWells, 0)} wells and ${formatNumber(desiredSingles, 0)} desired single-cell wells: lambda≈${solvedLambda.toFixed(3)}.${survivalNote}`;
 
   latestPlannerLambda = solvedLambda;
   elements.usePlannerLambdaButton.disabled = false;
@@ -669,6 +687,7 @@ function buildShareableUrl() {
   add("lambda", Number(state.lambda.toFixed(2)));
   add("wells", getPlannerTotalWells());
   add("singles", state.desiredSingles);
+  add("surv", state.survivalPercent);
   add("vol", state.platingVolumeUl);
   add("stock", state.stockConc);
 
@@ -706,6 +725,11 @@ function applyUrlParams() {
   readNum("singles", (value) => {
     if (value >= 0) {
       elements.desiredClonesInput.value = String(value);
+    }
+  });
+  readNum("surv", (value) => {
+    if (value >= 0 && value <= 100) {
+      elements.survivalInput.value = String(value);
     }
   });
   readNum("wells", (value) => {
@@ -808,6 +832,7 @@ function resetDefaults() {
   elements.customWellsInput.value = String(DEFAULTS.customWells);
   elements.customWellsInput.hidden = true;
   elements.desiredClonesInput.value = String(DEFAULTS.desiredSingles);
+  elements.survivalInput.value = String(DEFAULTS.survivalPercent);
   elements.stockConcInput.value = String(DEFAULTS.stockConc);
   elements.platingVolumeInput.value = String(DEFAULTS.platingVolumeUl);
   elements.finalPrepVolumeInput.value = String(DEFAULTS.finalPrepVolumeMl);
@@ -848,6 +873,7 @@ function setupEvents() {
   });
   elements.customWellsInput.addEventListener("input", updateAll);
   elements.desiredClonesInput.addEventListener("input", updateAll);
+  elements.survivalInput.addEventListener("input", updateAll);
 
   elements.usePlannerLambdaButton.addEventListener("click", () => {
     if (latestPlannerLambda !== null) {

@@ -238,6 +238,11 @@
           <input id="desiredClonesInput" type="number" min="0" step="1" value="30" />
           <p id="plannerError" class="input-error"></p>
         </div>
+        <div class="control">
+          <label for="survivalInput">Plating efficiency / survival S (%)</label>
+          <p class="field-help">Fraction of single seeded cells that survive and expand into a colony. 100% = pure Poisson (no post-plating loss); lower it for stressed, CRISPR-edited, or slow-growing cells.</p>
+          <input id="survivalInput" type="number" min="0" max="100" step="1" value="100" />
+        </div>
       </div>
 
       <div class="cards">
@@ -256,6 +261,11 @@
         <article class="card">
           <h3>Recommended seeding density</h3>
           <p id="plannerCsuspValue" class="metric">-</p>
+        </article>
+        <article class="card">
+          <h3>Expected usable colonies (after survival)</h3>
+          <p class="field-help">Expected single-cell wells &times; S. Equals the monoclonal count when S = 100%.</p>
+          <p id="plannerUsableValue" class="metric">-</p>
         </article>
       </div>
 

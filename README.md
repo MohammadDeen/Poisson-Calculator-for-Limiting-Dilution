@@ -15,7 +15,8 @@ A free, static, client-side web app for designing limiting-dilution cloning expe
 - Recommended lambda ranges for a target P(1) band (default 30–40%)
 - Interactive Poisson probability chart with live lambda markers
 - Exportable occupancy table (CSV)
-- Experiment Planner (reverse mode): solve lambda from a desired number of single-cell wells
+- Conditional monoclonality metric: single-cell fraction among occupied (growing) wells, `P(1)/(1−P(0))`
+- Experiment Planner (reverse mode): solve lambda from a desired number of single-cell wells, with an optional plating-efficiency/survival factor for expected usable colonies
 - Side-by-side lambda comparison (metrics, chart markers, table markers)
 - 96-well plate simulation preview with re-roll
 - Dilution Planner: suspension concentration and pipetting volumes, with the assumed plating volume shown inline

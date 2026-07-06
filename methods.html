@@ -111,6 +111,21 @@
         the &ldquo;single-cell among occupied wells&rdquo; metric and as a column in the occupancy table.
       </p>
 
+      <h3>Usable colonies after plating survival</h3>
+      <p>
+        Poisson describes how cells are <em>distributed</em>, not whether they live. If only a
+        fraction \(S\) of single seeded cells survive and expand into a colony, the expected number
+        of usable monoclonal colonies from \(N\) wells is
+      </p>
+      <p>$$ \mathbb{E}[\text{usable colonies}] = N \cdot P(1) \cdot S = N\,\lambda e^{-\lambda}\,S. $$</p>
+      <p>
+        \(S = 1\) (100%) recovers the pure-Poisson upper bound. The Experiment Planner exposes
+        \(S\) so you can plan realistic yields for stressed, CRISPR-edited, or slow-growing lines
+        &mdash; for example, 30 expected single-cell wells at \(S = 0.4\) yield only about 12 usable
+        colonies. Note this is a simple scalar correction; it assumes survival is independent of how
+        many cells a well received.
+      </p>
+
       <h2>3. Why P(1) peaks at 36.79%</h2>
       <p>
         \(P(1) = \lambda e^{-\lambda}\) is maximised where its derivative with respect to
