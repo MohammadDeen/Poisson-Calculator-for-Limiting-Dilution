@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mohammaddeen.github.io/Poisson-Calculator-for-Limiting-Dilution/sitemap.xml
